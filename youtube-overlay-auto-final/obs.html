@@ -1,0 +1,23 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Redirect OBS</title></head>
+<body>
+<script>
+  const u = new URL(window.location.href);
+  const live = u.searchParams.get('live');
+  const debug = u.searchParams.get('debug');
+  if(!live){ document.body.textContent = 'Use ?live=URL_DA_LIVE'; }
+  else{
+    const base = new URL(window.location.href);
+    base.pathname = base.pathname.replace(/obs\.html?$/i, 'number.html');
+    base.search = '';
+    const target = new URL(base.href);
+    target.searchParams.set('live', live);
+    target.searchParams.set('interval', '5');
+    target.searchParams.set('fontsize', '64');
+    target.searchParams.set('transparent', '1');
+    if(debug === '1') target.searchParams.set('debug', '1');
+    window.location.replace(target.toString());
+  }
+</script>
+</body></html>

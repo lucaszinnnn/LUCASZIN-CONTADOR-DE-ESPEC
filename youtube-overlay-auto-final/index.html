@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Gerar link do OBS — Automático</title>
+<style>
+  body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:#0f1115;color:#fff}
+  .wrap{max-width:720px;margin:56px auto;padding:0 16px}
+  .card{background:#181b22;border:1px solid #2a2f3a;border-radius:14px;padding:16px}
+  .row{display:flex;gap:8px;align-items:center}
+  input{flex:1;padding:12px 14px;border-radius:10px;border:1px solid #2a2f3a;background:#111319;color:#fff}
+  button{padding:12px 16px;border:0;border-radius:10px;background:#d2902b;color:#111;font-weight:800;cursor:pointer}
+  .out{margin-top:12px;display:flex;gap:8px;align-items:center}
+  .link{flex:1;font-size:13px;color:#aab1c5;background:#0f1115;border:1px dashed #2a2f3a;padding:10px 12px;border-radius:10px;overflow:auto;white-space:nowrap}
+  small{color:#aab1c5}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Gerador automático do link para o OBS</h1>
+    <p>Cole o link da sua live do YouTube. Vamos montar o link com <b>interval=5</b>, <b>fontsize=64</b>, <b>fundo transparente</b> e copiar pra você.</p>
+    <div class="card">
+      <div class="row">
+        <input id="live" type="url" placeholder="https://www.youtube.com/watch?v=VIDEO_ID ou https://youtube.com/@canal/live">
+        <button id="go">Gerar & Copiar</button>
+      </div>
+      <div id="out" class="out" style="display:none">
+        <div id="url" class="link"></div>
+        <a id="open" target="_blank"><button>Abrir agora</button></a>
+      </div>
+      <small>Dica: se quiser ver mensagens no overlay, adicione <code>&debug=1</code> no final do link.</small>
+    </div>
+  </div>
+<script>
+  function build(live){
+    const base = new URL(window.location.href);
+    base.pathname = base.pathname.replace(/index\.html?$/i, 'obs.html');
+    base.search = '';
+    const u = new URL(base.href);
+    u.searchParams.set('live', live);
+    return u.toString();
+  }
+  const $live = document.getElementById('live');
+  const $out = document.getElementById('out');
+  const $url = document.getElementById('url');
+  const $open = document.getElementById('open');
+  document.getElementById('go').addEventListener('click', async () => {
+    const live = ($live.value||'').trim();
+    if(!live){ alert('Cole o link da live.'); return; }
+    try{ new URL(live) }catch{ alert('Link inválido'); return; }
+    const link = build(live);
+    $url.textContent = link;
+    $open.href = link;
+    $out.style.display = 'flex';
+    try{ await navigator.clipboard.writeText(link); alert('Link copiado! Cole no OBS (Browser Source).'); }catch{}
+  });
+</script>
+</body>
+</html>
